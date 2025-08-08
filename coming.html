@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>COMING SOON</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+      color: white;
+
+      /* Background gradasi merah, putih, hitam */
+      background: linear-gradient(135deg, #8b0000, #ff0000, #000000);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .logo {
+      width: 250px;
+      max-width: 80%;
+      margin-bottom: 2rem;
+      animation: fadeInZoom 1s ease-in-out, float 3s ease-in-out infinite;
+    }
+
+    @keyframes fadeInZoom {
+      0% {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .countdown-wrapper {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+      overflow: visible;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .countdown-item {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(4px);
+      padding: 0.7rem 0.8rem;
+      border-radius: 0.75rem;
+      animation: float 3s ease-in-out infinite;
+      flex-shrink: 0;
+      min-width: 70px;
+      text-align: center;
+    }
+
+    .countdown-item:nth-child(2) { animation-delay: 0.2s; }
+    .countdown-item:nth-child(3) { animation-delay: 0.4s; }
+    .countdown-item:nth-child(4) { animation-delay: 0.6s; }
+
+    .countdown-item div:first-child {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .countdown-item div:last-child {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- GANTI URL BERIKUT DENGAN LINK LOGO KAMU -->
+  <img src="https://files.catbox.moe/pq5u58.png" alt="Logo" class="logo" />
+
+  <div class="countdown-wrapper">
+    <div class="countdown-item">
+      <div class="countdown-days">00</div>
+      <div>Days</div>
+    </div>
+    <div class="countdown-item">
+      <div class="countdown-hours">00</div>
+      <div>Hours</div>
+    </div>
+    <div class="countdown-item">
+      <div class="countdown-minutes">00</div>
+      <div>Minutes</div>
+    </div>
+    <div class="countdown-item">
+      <div class="countdown-seconds">00</div>
+      <div>Seconds</div>
+    </div>
+  </div>
+
+  <script>
+  // Atur tanggal dan waktu target countdown secara eksplisit (misalnya: 7 hari dari sekarang di WIB)
+  // Misalnya targetnya: 15 Agustus 2025 jam 23:59:59 WIB
+  const targetDate = new Date("2025-08-15T23:59:59+07:00"); // +07:00 = WIB
+
+  const x = setInterval(function () {
+    const now = new Date().getTime(); // waktu sekarang (local time visitor)
+    const distance = targetDate.getTime() - now;
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.querySelector(".countdown-days").textContent = String(days).padStart(2, '0');
+    document.querySelector(".countdown-hours").textContent = String(hours).padStart(2, '0');
+    document.querySelector(".countdown-minutes").textContent = String(minutes).padStart(2, '0');
+    document.querySelector(".countdown-seconds").textContent = String(seconds).padStart(2, '0');
+
+    if (distance < 0) {
+      clearInterval(x);
+      document.querySelectorAll(".countdown-item").forEach(item => {
+        item.innerHTML = "<div class='text-sm'>🚀</div>";
+      });
+    }
+  }, 1000);
+</script>
+
+
+</body>
+</html>

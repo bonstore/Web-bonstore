@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bonstore</title>
+  <style>
+    /* Semua CSS sudah tergabung dan dioptimalkan */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #ffffff;
+      color: #000;
+    }
+
+    header {
+      background: #cc0d2d;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo img {
+  height: 40px;
+  position: relative; /* diperlukan untuk bisa digeser */
+  left: -35px; /* geser ke kiri */
+  top: 0px;    /* geser ke bawah */
+}
+
+    .menu-btn {
+      width: 30px;
+      height: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .menu-btn span {
+      height: 6px;
+      border-radius: 3px;
+      background: white;
+      display: block;
+      transition: 0.3s ease;
+    }
+    .menu-btn.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .menu-btn.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-btn.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+    .popup-menu {
+      position: absolute;
+      top: 70px;
+      right: 5px;
+      background: white;
+      border: 1px solid #cc0d2d;
+      border-radius: 8px;
+      width: 160px;
+      display: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 999;
+    }
+    .popup-menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 8px 0;
+    }
+    .popup-menu ul li {
+      padding: 10px 16px;
+      cursor: pointer;
+      color: #cc0d2d;
+      font-weight: bold;
+    }
+    .popup-menu ul li:hover {
+      background-color: #f2f2f2;
+    }
+
+    .slider-container {
+      width: 95%;
+      overflow: hidden;
+      position: relative;
+      border-radius: 10px;
+      margin: 15px auto;
+      max-width: 1000px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+    .slider {
+  display: flex;
+  width: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+.slider img {
+  width: 100%;
+  max-width: 1000px;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+
+    .category-container {
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      margin: 20px 10px;
+      padding: 0 10px;
+    }
+    .scroll-btn {
+      background-color: #cc0d2d;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 15px;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 1;
+    }
+    .category-scroll {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      gap: 10px;
+      padding: 10px 0;
+      margin: 0 10px;
+    }
+    .category-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .category-button {
+      flex: 0 0 auto;
+      background-color: #cc0d2d;
+      color: white;
+      border: 2px solid white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .category-button.active {
+      background-color: white;
+      color: #cc0d2d;
+      border: 2px solid #cc0d2d;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 16px;
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 25px;
+    }
+    a.game-card {
+      text-decoration: none;
+      color: inherit;
+    }
+    .game-card {
+      background: #cc0d2d;
+      border-radius: 12px;
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease forwards;
+    }
+    .game-card:hover {
+      transform: scale(1.05);
+    }
+    .game-card img {
+      width: 100%;
+      height: auto;
+    }
+    .game-title{
+     text-decoration: none; /* Hilangkan garis bawah */
+      padding: 10px;
+      font-size: 11px;
+      font-weight: bold;
+      color: white;
+    }
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      padding-top: 100px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #cc0d2d;
+      color: #ffffff;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      animation: fadeIn 0.3s ease;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+    }
+    .close-btn {
+      float: right;
+      font-size: 40px;
+      font-weight: bold;
+      color: #ffff;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      color: black;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<header>
+    
+    <div class="logo">
+      <img src="https://files.catbox.moe/pq5u58.png" alt="anjani Logo">
+    </div>
+    <div class="menu-btn" id="menuBtn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="popup-menu" id="popupMenu">
+      <ul>
+        <li>Tentang</li>
+        <li>Cs Bonstore</li>
+        <li>Cara Order</li>
+        <li>Testimoni</li>
+      </ul>
+    </div>
+  </header>
+  <!-- Banner Slider -->
+<div class="slider-container">
+  <div class="slider">
+    <img src="https://files.catbox.moe/555m5q.jpg" alt="Banner 1" />
+    <img src="https://files.catbox.moe/k2715k.jpg" alt="Banner 2" />
+    <img src="https://files.catbox.moe/8rec6z.jpg" alt="Banner 3" />
+  </div>
+</div>
+
+<div class="category-container">
+    <button class="scroll-btn" onclick="scrollCategory(-200)">&#8249;</button>
+    <div class="category-scroll" id="categoryScroll">
+      <button class="category-button active" data-kategori="topup">TOPUP GAME</button>
+      <button class="category-button" data-kategori="sosmed">SUNTIK SOSMED</button>
+      <button class="category-button" data-kategori="jasa">JASA BONSTORE</button>
+    </div>
+    <button class="scroll-btn" onclick="scrollCategory(200)">&#8250;</button>
+  </div>
+  <div class="grid-container" id="gameContainer">
+<!-- TopUp Game -->
+    <a href="freefire.html" class="game-card" data-kategori="topup">
+      <img src="https://files.catbox.moe/y55zh4.png" alt="freefire">
+      <div class="game-title">FREE FIRE</div>
+    </a>
+    <a href="mlbb.html" class="game-card" data-kategori="topup">
+      <img src="https://files.catbox.moe/hpuzi6.jpg" alt="mlbb">
+      <div class="game-title">MOBILE LEGENDS</div>
+    </a>
+    <a href="genshin.html" class="game-card" data-kategori="topup">
+      <img src="https://files.catbox.moe/3xosky.jpg" alt="genshin">
+      <div class="game-title">GENSHIN IMPACT</div>
+    </a>
+    <a href="pubg.html" class="game-card" data-kategori="topup">
+    <img src="https://files.catbox.moe/62bwcf.jpg" alt="pubg">
+    <div class="game-title">PUBG MOBILE</div>
+  </a>
+  <a href="cod.html" class="game-card" data-kategori="topup">
+    <img src="https://files.catbox.moe/k31mya.jpg" alt="cod">
+    <div class="game-title">CALL OF DUTY</div>
+  </a>
+  <a href="valoran.html" class="game-card" data-kategori="topup">
+    <img src="https://files.catbox.moe/4x6sm7.jpg" alt="valoran">
+    <div class="game-title">VALORAN</div>
+  </a>
+
+  <!-- ======= SUNTIK SOSMED ======= -->
+  <a href="tiktok.html" class="game-card" data-kategori="sosmed">
+    <img src="https://files.catbox.moe/fe7oev.jpg" alt="tiktok">
+    <div class="game-title">TIK TOK</div>
+  </a>
+  <a href="instagram.html" class="game-card" data-kategori="sosmed">
+    <img src="https://files.catbox.moe/756iqd.jpg" alt="instagram">
+    <div class="game-title">INSTAGRAM</div>
+  </a>
+  <a href="whatsApp.html" class="game-card" data-kategori="sosmed">
+    <img src="https://files.catbox.moe/9asi92.jpg" alt="valoran">
+    <div class="game-title">WHATSAPP</div>
+  </a>
+  <a href="faceboock.html" class="game-card" data-kategori="sosmed">
+    <img src="https://files.catbox.moe/95fzif.jpg" alt="valoran">
+    <div class="game-title">FACEBOOCK</div>
+  </a>
+  <a href="youtube.html" class="game-card" data-kategori="sosmed">
+    <img src="https://files.catbox.moe/myhqp0.jpg" alt="valoran">
+    <div class="game-title">YOUTUBE</div>
+  </a>
+  
+    <!-- Lainnya -->
+    <a href="coming.html" class="game-card" data-kategori="jasa">
+      <img src="https://files.catbox.moe/by1mwy.jpg" alt="tiktok">
+      <div class="game-title">BUAT WEB STORE (TRIMA BERES)</div>
+    </a>
+    <a href="coming.html" class="game-card" data-kategori="jasa">
+      <img src="https://files.catbox.moe/by1mwy.jpg" alt="tiktok">
+      <div class="game-title">SCRIPT WEBSITE</div>
+    </a>
+    <a href="coming.html" class="game-card" data-kategori="jasa">
+      <img src="https://files.catbox.moe/by1mwy.jpg" alt="tiktok">
+      <div class="game-title">JASA EDIT WEBSITE</div>
+    </a>
+  </div>
+
+  <!-- Modal Pop-up -->
+  <div id="infoModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <div id="modalText"></div>
+    </div>
+  </div>
+  
+    <script>
+    const categoryButtons = document.querySelectorAll('.category-button');
+    const allGameCards = document.querySelectorAll('.game-card');
+
+    function filterKategori(kategoriDipilih) {
+      allGameCards.forEach(card => {
+        const kategoriCard = card.dataset.kategori;
+        if (kategoriCard === kategoriDipilih) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+          card.style.animation = 'none';
+        }
+      });
+      applyAnimation(kategoriDipilih);
+    }
+
+    function applyAnimation(kategoriDipilih) {
+      const visibleCards = Array.from(allGameCards).filter(
+        card => card.dataset.kategori === kategoriDipilih
+      );
+      visibleCards.forEach((card, index) => {
+        card.style.animation = 'none';
+        void card.offsetWidth;
+        card.style.opacity = 0;
+        setTimeout(() => {
+          card.style.animation = `fadeInUp 0.4s ease forwards`;
+          card.style.animationDelay = `${0.15 * index}s`;
+        }, 50);
+      });
+    }
+
+    categoryButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        categoryButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const kategoriDipilih = btn.dataset.kategori;
+        filterKategori(kategoriDipilih);
+      });
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const aktif = document.querySelector('.category-button.active');
+      if (aktif) {
+        const kategoriAwal = aktif.dataset.kategori;
+        filterKategori(kategoriAwal);
+      }
+    });
+
+    const menuBtn = document.getElementById('menuBtn');
+    const popupMenu = document.getElementById('popupMenu');
+
+    menuBtn.addEventListener('click', () => {
+      menuBtn.classList.toggle('active');
+      popupMenu.style.display = popupMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    window.addEventListener('click', function(event) {
+      if (!menuBtn.contains(event.target) && !popupMenu.contains(event.target)) {
+        popupMenu.style.display = 'none';
+        menuBtn.classList.remove('active');
+      }
+    });
+
+    const modal = document.getElementById('infoModal');
+    const modalText = document.getElementById('modalText');
+
+    document.querySelectorAll('#popupMenu li').forEach(item => {
+      item.addEventListener('click', () => {
+        const text = item.textContent.trim();
+        let content = '';
+        if (text === 'Tentang') {
+          content = `<h3>Tentang</h3><p>Selamat Datang Di Bonstore, Pusat Layanan TopUp Game,Suntik Sosmed, dan Jasa Pembuatan Website Sederhana Terpercaya Dengan Proses Cepat Dan Harga Bersahabat!</p>`;
+} else if (text === 'Cs Bonstore') {
+  content = `
+    <h3>Cs Bonstore</h3>
+    <p>Butuh bantuan? Tenang aja! <strong>CS Bonstore</strong> siap bantu kamu setiap hari, ramah & responsif 💬✨</p>
+    <p><strong>No Admin:</strong> <a href="https://wa.me/6285141316926" target="_blank" style="color:#fff;text-decoration:underline;">Klik Di Sini</a></p>
+    <p><strong>Grup whatsapp:</strong> <a href="https://chat.whatsapp.com/Hnmud4hHeCJH3EdSluE4Uh?mode=ac_t" target="_blank" style="color:#fff;text-decoration:underline;">Klik untuk gabung</a></p>
+  `;
+} else if (text === 'Cara Order') {
+  content = `
+    <h3>Cara Order</h3>
+    <ol>
+      <li>Pilih produk yang kamu mau 🎮</li>
+      <li>Isi data sesuai form 📝</li>
+      <li>Pilih metode pembayaran (Dana / QRIS) 💸</li>
+      <li>Tekan tombol "Checkout" dan kamu akan diarahkan ke WhatsApp 📲</li>
+      <li>Kirim pesan, lalu tinggal tunggu CS kami proses order kamu! ✅</li>
+    </ol>
+    <p style="margin-top:10px;">Mudah kan? Yuk langsung order sekarang juga 🚀</p>
+    <p><strong>Vidio Tutorial:</strong> <a href="https://youtu.be/PpJEVAmFfvA?si=foZxBntTNSWaM8bm" target="_blank" style="color:#fff;text-decoration:underline;">Vidio Tutorial</a></p>
+  `;
+} else if (text === 'Testimoni') {
+  content = `
+    <h3>Testimoni</h3>
+    <p>Mau bukti nyata? Intip testimoni real dari pelanggan setia Bonstore!</p>
+    <p><strong>Grup whatsapp:</strong> <a href="https://whatsapp.com/channel/0029VarfsIo0LKZLPbU5ML1Y" target="_blank" style="color:#fff;text-decoration:underline;">Cek Testimoni</a></p>
+  `;
+}
+        modalText.innerHTML = content;
+        modal.style.display = 'block';
+        popupMenu.style.display = 'none';
+        menuBtn.classList.remove('active');
+      });
+    });
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+    let currentSlide = 0;
+const slides = document.querySelectorAll('.slider img');
+const totalSlides = slides.length;
+
+setInterval(() => {
+  currentSlide = (currentSlide + 1) % totalSlides;
+  document.querySelector('.slider').style.transform = `translateX(-${currentSlide * 100}%)`;
+}, 3000); // ganti tiap 4 detik
+
+  </script>
+</body>
+</html>

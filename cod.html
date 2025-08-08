@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>List TopUp Game</title>
+  <style>
+    body {
+      font-family: 'Arial Rounded MT Bold', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+
+    header {
+      background: #cc0d2d;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo img {
+  height: 40px;
+  position: relative; /* diperlukan untuk bisa digeser */
+  left: -35px; /* geser ke kiri */
+  top: 0px;    /* geser ke bawah */
+}
+
+    .menu-btn {
+      width: 30px;
+      height: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .menu-btn span {
+      height: 6px;
+      border-radius: 3px;
+      background: white;
+      display: block;
+      transition: 0.3s ease;
+    }
+    .menu-btn.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .menu-btn.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-btn.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .popup-menu {
+      position: absolute;
+      top: 70px;
+      right: 5px;
+      background: white;
+      border: 1px solid #cc0d2d;
+      border-radius: 8px;
+      width: 160px;
+      display: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 999;
+    }
+    .popup-menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 8px 0;
+    }
+    .popup-menu ul li {
+      padding: 10px 16px;
+      cursor: pointer;
+      color: #cc0d2d;
+      font-weight: bold;
+    }
+    .popup-menu ul li:hover {
+      background-color: #f2f2f2;
+    }
+
+    .diamond-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 20px;
+      justify-content: center;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .diamond-card {
+      position: relative;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      width: 40%;
+      height: 10vh;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 150px;
+      min-height: 60px;
+      overflow: hidden;
+      opacity: 0;
+    }
+
+    .diamond-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .diamond-top span {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .diamond-top img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .price-tag {
+      position: absolute;
+      background-color: #cc0d2d;
+      color: white;
+      padding: 1px 15px;
+      border-top-left-radius: 8px;
+      font-size: 12px;
+      bottom: 1px;
+      right: 1px;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fade-in 0.6s ease forwards;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      padding-top: 100px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+  background-color: #cc0d2d;
+  color: #ffffff;
+  margin:  auto;
+  margin-top: -5px; /* jarak dari atas layar */
+  padding: 20px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 450px;
+  animation: fadeIn 0.3s ease;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+    .close-btn {
+      float: right;
+      font-size: 40px;
+      font-weight: bold;
+      color: #ffff;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      color: black;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======= NAVBAR ======= -->
+  <header>
+    <div class="logo">
+      <img src="https://files.catbox.moe/pq5u58.png" alt="BONSTORE Logo">
+    </div>
+    <div class="menu-btn" id="menuBtn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="popup-menu" id="popupMenu">
+      <ul>
+  <li>Tentang</li>
+  <li>Cs Bonstore</li>
+  <li>Cara Order</li>
+  <li>Testimoni</li>
+</ul>
+    </div>
+  </header>
+
+ 
+
+  <div class="diamond-list" id="product-list"></div>
+
+<!-- Modal Pop-up -->
+<div class="modal" id="infoModal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <div id="modalText"></div>
+  </div>
+</div>
+
+
+  <script>
+    const produk = [
+      { nama: '63 CP Call Of Duty', harga: 12000 },
+      { nama: '128 CP Call Of Duty', harga: 20000 },
+      { nama: '321 CP Call Of Duty', harga: 47000 },
+      { nama: '645 CP Call Of Duty', harga: 95000 },
+      { nama: '800 CP Call Of Duty', harga: 115000 },
+      { nama: '1373 CP Call Of Duty', harga: 186000 },
+      { nama: '2060 CP Call Of Duty', harga: 278000 },
+      { nama: '2750 CP Call Of Duty', harga: 83000 },
+      { nama: '3564 CP Call Of Duty', harga: 352000 },
+      { nama: '5619 CP Call Of Duty', harga: 665000 },
+      { nama: '7656 CP Call Of Duty', harga: 895000 },
+      { nama: '15312 CP Call Of Duty', harga: 1835000 },
+      { nama: '38280 CP Call Of Duty', harga: 4560000 },
+      { nama: '76560 CP Call Of Duty', harga: 8911000 },
+    ];
+
+    const icon = "https://files.catbox.moe/hzsvv5.jpg";
+    const container = document.getElementById('product-list');
+
+    produk.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'diamond-card fade-in';
+      card.style.animationDelay = `${i * 80}ms`;
+
+      card.innerHTML = `
+        <div class="diamond-top">
+          <span>${p.nama}</span>
+          <img src="${icon}" alt="icon" />
+        </div>
+        <div class="price-tag">Rp ${p.harga.toLocaleString('id-ID')}</div>
+      `;
+
+      card.onclick = () => {
+        localStorage.setItem('produkDipilih', JSON.stringify(p));
+        window.location.href = 'checkout.html';
+      };
+
+      container.appendChild(card);
+    });
+
+    // Toggle Menu
+    const menuBtn = document.getElementById('menuBtn');
+    const popupMenu = document.getElementById('popupMenu');
+    menuBtn.addEventListener('click', () => {
+      menuBtn.classList.toggle('active');
+      popupMenu.style.display = popupMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    window.addEventListener('click', function(event) {
+      if (!menuBtn.contains(event.target) && !popupMenu.contains(event.target)) {
+        popupMenu.style.display = 'none';
+        menuBtn.classList.remove('active');
+      }
+    });
+
+    // Modal script
+    const modal = document.getElementById('infoModal');
+    const modalText = document.getElementById('modalText');
+
+    document.querySelectorAll('#popupMenu li').forEach(item => {
+      item.addEventListener('click', () => {
+        const text = item.textContent.trim();
+        let content = '';
+        if (text === 'Tentang') {
+  content = `
+    <div>
+      <h3>Tentang</h3>
+      <p>Selamat Datang Di Bonstore, Pusat Layanan TopUp Game, Suntik Sosmed, dan Jasa Pembuatan Website Sederhana Terpercaya Dengan Proses Cepat Dan Harga Bersahabat!</p>
+    </div>
+  `;
+} else if (text === 'Cs Bonstore') {
+  content = `
+    <div>
+      <h3>Cs Bonstore</h3>
+      <p>Butuh bantuan? Tenang aja! <strong>CS Bonstore</strong> siap bantu kamu setiap hari, ramah & responsif 💬✨</p>
+      <p><strong>No Admin:</strong> <a href="https://wa.me/6285141316926" target="_blank" style="color:#fff;text-decoration:underline;">Klik Di Sini</a></p>
+      <p><strong>Grup WhatsApp:</strong> <a href="https://chat.whatsapp.com/Hnmud4hHeCJH3EdSluE4Uh?mode=ac_t" target="_blank" style="color:#fff;text-decoration:underline;">Klik untuk gabung</a></p>
+    </div>
+  `;
+} else if (text === 'Cara Order') {
+  content = `
+    <div>
+      <h3>Cara Order</h3>
+      <ol>
+        <li>Pilih produk yang kamu mau 🎮</li>
+        <li>Isi data sesuai form 📝</li>
+        <li>Pilih metode pembayaran (Dana / QRIS) 💸</li>
+        <li>Tekan tombol "Checkout" dan kamu akan diarahkan ke WhatsApp 📲</li>
+        <li>Kirim pesan, lalu tinggal tunggu CS kami proses order kamu! ✅</li>
+      </ol>
+      <p style="margin-top:10px;">Mudah kan? Yuk langsung order sekarang juga 🚀</p>
+      <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/PpJEVAmFfvA?si=foZxBntTNSWaM8bm" target="_blank" style="color:#fff;text-decoration:underline;">Tonton Video</a></p>
+    </div>
+  `;
+} else if (text === 'Testimoni') {
+  content = `
+    <div>
+      <h3>Testimoni</h3>
+      <p>Mau bukti nyata? Intip testimoni real dari pelanggan setia Bonstore! 🔥</p>
+      <p><strong>Lihat di sini:</strong> <a href="https://whatsapp.com/channel/0029VarfsIo0LKZLPbU5ML1Y" target="_blank" style="color:#fff;text-decoration:underline;">Cek Testimoni</a></p>
+      <p style="margin-top:10px;"><em>Jangan cuma lihat, buktikan sendiri kualitas kami! 😎</em></p>
+    </div>
+  `;
+}
+
+        modalText.innerHTML = content;
+        modal.style.display = 'block';
+        popupMenu.style.display = 'none';
+        menuBtn.classList.remove('active');
+      });
+    });
+    function closeModal() {
+  modal.style.display = 'none';
+}
+
+
+  </script>
+</body>
+</html>
